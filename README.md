@@ -3,15 +3,11 @@
 
 Ce README est composé de:
 1. Rappel du projet
-2. Notre repository
-3. Structure des fichiers du repository
+2. Structure des fichiers du repository
 
 
 ## Rappel du projet
 Dans le cadre du projet R réalisé à l'IUT par les SD2 (années 2024-25), nous avons choisi de travailler sur le département de la Meuse (55). Pour rappel, le projet consiste à développer une application RShiny permettant de visualiser des données énergétiques (logements neufs et anciens) pour un département donné.  L'objectif est d'offrir à l'utilisateur des outils pour explorer les données via des graphiques, tableaux et cartographies interactives. En complément de cette application, un rapport RMarkdown a été produit pour détailler les analyses statistiques réalisées sur ces données. Ce projet s'inscrit dans le cadre d'une étude visant à explorer l'impact du Diagnostic de Performance Energétique (DPE) sur les consommations énergétiques des logements grâce à des données provenant de plusieurs sources, notamment la [Base Adresse Nationale](https://adresse.data.gouv.fr/data/ban/adresses/latest/csv) (BAN) et deux API fournies par l'[ADEME](https://data.ademe.fr/datasets?topics=BR8GjsXga) (logements neufs et existants).
-<br>
-</br>
-## Notre repository
 <br>
 </br>
 
