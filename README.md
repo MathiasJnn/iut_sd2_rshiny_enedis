@@ -37,7 +37,3 @@ Rapport final généré en format HTML. Il présente les analyses statistiques e
 </br>
 ### **`README.md`** : 
 Ce fichier que vous lisez actuellement. Il présente une vue d'ensemble du projet, sa structure, ainsi que les fichiers présents dans le repository.
-
-
-il faut mettre en tout: le rshiny
-                        les deux docus
