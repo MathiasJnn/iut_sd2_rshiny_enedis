@@ -28,7 +28,7 @@ Ce fichier est un document RMarkdown qui contient le code source permettant de g
 <br>
 </br>
 ### **`Rapport_final_HTML.html`** : 
-Rapport final généré en format HTML. Il présente les analyses statistiques et graphiques réalisées à partir des données collectées.
+Rapport final généré en format HTML. Il présente les analyses statistiques et graphiques réalisées à partir des données collectées. C'est un fichier html récupéré pour un exemple visuel du 13/10/2024.
 <br>
 </br>
 ### **`README.md`** : 
