@@ -16,7 +16,7 @@ Voici la liste des fichiers disponibles dans ce repository et leur utilité dans
 <br>
 </br>
 ### **`adresses-55.csv`**: 
-Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données.
+Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données. Il sert également de lien pour éxécuter le code sans avoir à importer localement les données sur le poste de l'utilisateur.
 <br>
 </br>
 ### **`Base_de_données.R`** : 
