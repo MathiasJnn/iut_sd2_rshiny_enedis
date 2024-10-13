@@ -27,7 +27,7 @@ Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour 
 Script R permettant de générer la base de données finale. Cette base regroupe les données de la BAN ainsi que celles des API "logements neufs" et "logements existants" de l'ADEME. Des commentaires explicatifs du code y sont associé.
 <br>
 </br>
-### **`Documentation.PDF`** : 
+### **`Documentation.pdf`** : 
 Documentation est le fichier regroupant la doc technique et fonctionnelle pour l'application Shiny. La première est orientée développeur et la seconde orientée utilisateur. Vous y retrouverez tout ce qui est important pour la bonne utilisation de l'appli.
 <br>
 </br>
