@@ -1,0 +1,423 @@
+---
+output: html_document
+---
+<style>
+  body {
+    background-color: #f0f0f0;  /* Définit le fond gris clair */
+  }
+</style>
+
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+<table width="100%">
+  <tr>
+    <td align="left"><strong><big>Mathias & Azad</big></strong></td>
+    <td align="right"><em><big>`r Sys.Date()`</big></em></td>
+  </tr>
+</table>
+
+<div style="text-align: center; border: 2px solid #004d99; padding: 15px; background-color: #f0f8ff; border-radius: 10px;">
+
+  <h1 style="color: #004d99; font-size: 36px; font-weight: bold;">
+    Analyse des DPE dans le département de la Meuse
+  </h1>
+
+</div>
+
+</div>
+
+<br>
+</br>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Ici j'importe de façon invisible tout le code que j'ai fait précédemment pour avoir la bdd finale
+
+#Ci-dessous, c'est une fonction qui permet d'installer les packages seulement s'ils ne le sont pas déjà
+if (!require(dplyr)) {
+  install.packages("dplyr")
+}
+if (!require(httr)) {
+  install.packages("httr")
+}
+if (!require(jsonlite)) {
+  install.packages("jsonlite")
+}
+if (!require(ggplot2)) {
+  install.packages("ggplot2")
+}
+if (!require(leaflet)) {
+  install.packages("leaflet")
+}
+if (!require(shiny)) {
+  install.packages("shiny")
+}
+if (!require(plotly)) {
+  install.packages("plotly")
+}
+
+# Chargement des bibliothèques
+library(httr)
+library(jsonlite)
+library(ggplot2)
+library(leaflet)
+library(dplyr)
+library(shiny)
+library(plotly)
+
+# Lecture du fichier et préparation des codes postaux
+# Choix du département de la Meuse (55)
+
+#lien pour trouver la bdd du 55 sur mon Git
+url_github = "https://raw.githubusercontent.com/MathiasJnn/iut_sd2_rshiny_enedis/refs/heads/main/adresses-55.csv"
+Df_code_postal = read.csv(url(url_github), sep = ";",dec = ".")  # ou utilise le bon séparateur selon ton fichier
+code_postaux="55*"
+
+
+# Initialisation des dataframes vides pour stocker les résultats
+existants_55=data.frame()
+neufs_55=data.frame()
+
+#initialisation des dates avant boucles
+#choix des dates à partir de 2020 car il n'y a pas de données dans l'API avant ça
+Date_existants=2020
+Date_neufs=2020
+
+# Base URL de l'API existants
+base_url_existants = "https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines"
+
+# Base URL de l'API neufs
+base_url_neufs= "https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-neufs/lines"  
+
+
+#boucles
+repeat{
+  
+  # Paramètres de la requête API
+  params = list(
+    page = 1,
+    size = 10000,  # taille max possible en 1 fois
+    select = "N°DPE,Identifiant__BAN,Code_postal_(BAN),Etiquette_DPE,Date_réception_DPE,Coordonnée_cartographique_Y_(BAN),Coordonnée_cartographique_X_(BAN)",
+    q = code_postaux,
+    q_fields = "Code_postal_(BAN)",
+    qs = paste0("Date_réception_DPE:[",Date_existants,"-01-01 TO ",Date_existants,"-12-31]")
+  ) 
+ #
+  # Encodage des paramètres dans l'URL
+  url_encoded = modify_url(base_url_existants, query = params)
+  
+  # Effectuer la requête
+  response = GET(url_encoded)
+  
+  # Vérification du statut de la réponse
+  if (status_code(response) != 200) {
+    stop("Erreur")
+  }
+      # Convertir la réponse en JSON et extraire les données
+    content = fromJSON(rawToChar(response$content), flatten = FALSE)
+    
+    # Extraire les données sous forme de dataframe
+    df = content$result
+    
+    # Si des données sont présentes, les ajouter au dataframe final
+    existants_55 = rbind(existants_55, df)
+    
+    #incrémentation de la date
+    Date_existants=Date_existants+1
+    
+    #stop si 2050 trouvé
+    if (Date_existants ==2050){
+      break
+    }
+    if (Date_existants %%600 ==0){
+      Sys.sleep(60)
+    }
+}  
+
+ #J'ai fait pareil pour les logements neufs   
+
+#boucles    
+repeat{    
+    
+  # Paramètres de la requête
+  params = list(
+    page = 1,
+    size = 10000,  # Vous pouvez ajuster cette taille selon vos besoins
+    select = "N°DPE,Identifiant__BAN,Code_postal_(BAN),Etiquette_DPE,Date_réception_DPE,Coordonnée_cartographique_Y_(BAN),Coordonnée_cartographique_X_(BAN)",
+    q = code_postaux,
+    q_fields = "Code_postal_(BAN)",
+    qs = paste0("Date_réception_DPE:[",Date_neufs,"-01-01 TO ",Date_neufs,"-12-31]")
+  ) 
+  
+  # Encodage des paramètres dans l'URL
+  url_encoded = modify_url(base_url_neufs, query = params)
+  
+  # Effectuer la requête
+  response = GET(url_encoded)
+  
+  # Vérification du statut de la réponse
+  if (status_code(response) != 200) {
+    stop("Erreur")
+  }
+  # Convertir la réponse en JSON et extraire les données
+  content = fromJSON(rawToChar(response$content), flatten = FALSE)
+  
+  # Extraire les données sous forme de dataframe
+  df = content$result
+  
+  # Si des données sont présentes, les ajouter au dataframe final
+  neufs_55 = rbind(neufs_55, df)  
+    
+#incrémentation de la date
+  Date_neufs=Date_neufs+1
+  
+  #stop si 2050 trouvé
+  if (Date_neufs ==2050){
+    break
+  }
+}  
+#----------------------------fin de l'importation des données-----------------------------------------
+
+#ajout de la colonne "Type_de_logement" dans les deux df
+existants_55$Type_de_logement="ancien"
+neufs_55$Type_de_logement="neuf"
+
+#créer un df unique avec les existants et les neufs
+df_logement=rbind(existants_55,neufs_55)
+#liaison des deux df
+df_final = merge(df_logement, Df_code_postal, 
+                   by.x = "Identifiant__BAN", 
+                   by.y = "id")
+#Liaison des deux df
+#----------------------------df_final utilisable-----------------------------------------
+#Ci-dessous, il ya du langage HTML pour la mise en page (center pour centrer et div style pour limiter les bordures de la page)
+# "br" pour sauter des lignes, "**" pour mettre en gras, un lien cliquable, etc...
+```
+<div style="max-width: 800px; margin: 0 auto; text-align: center;"> 
+
+
+<center>
+  <h1 style="color: #004d99;">Introduction</h1>
+</center>
+
+<center>
+
+<u>Le département de la Meuse (55)</u>, situé dans la région **Grand Est**, est un territoire essentiellement rural, marqué par son histoire et ses paysages naturels. Avec une densité de *population relativement faible* et un *parc immobilier ancien*, il se prête particulièrement à des analyses intéressantes en matière de **performance énergétique des bâtiments (DPE)**.
+
+Dans le cadre de la transition énergétique et de la réduction des consommations d’énergie, l’évaluation de la performance énergétique des logements est un enjeu crucial. Cette étude a pour but d'analyser les Diagnostics de Performance Énergétique (DPE) des logements du département de la Meuse (55). À travers cette analyse, nous nous posons la question suivante : **"Les logements neufs présentent-ils une meilleure performance énergétique que les logements anciens dans ce département ?"**
+
+</center>
+<br>
+</br>
+<center>
+  <h1 style="color: #004d99;">Description des données</h1>
+</center>
+
+<center>Nous avons constitué une base de données complète en utilisant l'API de l'**ADEME** [ [(Disponible ici)](https://data.ademe.fr/datasets?topics=BR8GjsXga) ]{style="font-size:8pt"} , qui regroupe des informations sur les **logements existants et neufs**. En important les données du département de la Meuse, cette base de données détaillée va nous permettre de mener des analyses approfondies sur les performances énergétiques (DPE) des bâtiments, en identifiant les tendances de l'efficacité énergétique à l'échelle locale. Les résultats de cette étude sont ceux disponibles via les deux bases de données réunies. Elles ne prennent donc pas en compte l'entièreté des logements du département.</center>
+
+<br>
+</br>
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+<center>
+  <h1 style="color: #004d99;">Quelques indicateurs</h1>
+</center>
+</div>
+
+```{r set, fig.width=6, fig.height=4,echo=FALSE,fig.align='center'} 
+#Permet de n'afficher que le résultat et/ou graphique et surtout de mettre en forme (centrer et réduire)
+# -----------------------------Analyses des données-----------------------------------
+
+# Calcul de la répartition des types de logements
+
+# Calcul du pourcentage de chaque type de logement
+nombre_ancien <- round(sum(df_final$Type_de_logement == "ancien")/(sum(df_final$Type_de_logement == "ancien")+sum(df_final$Type_de_logement == "neuf")),3)*100
+nombre_neuf <- round(sum(df_final$Type_de_logement == "neuf")/(sum(df_final$Type_de_logement == "ancien")+sum(df_final$Type_de_logement == "neuf")),3)*100
+
+```
+
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+```{r fig.width=6, fig.height=4,echo=FALSE, results='asis', fig.align='center'}
+ cat("<span style='font-size:20px;'>","KPI: Dans le département de la Meuse,",
+     
+    "<span style='font-size:35px;'>","<span style='color:blue;'>", nombre_ancien, "%</span>","</span>",
+    "des logements sont **anciens** et",
+    "<span style='font-size:35px;'>","<span style='color:blue;'>", nombre_neuf, "%</span>","</span>",
+    "sont **neufs**.","</span>") 
+```
+</div>
+
+<center>
+**Ce KPI** est utile pour comprendre la répartition des logements anciens et neufs 
+dans le département, ce qui influence directement l'état énergétique global. 
+On s'attend donc à ce que la moyenne énergétique soit assez basse dans le département puisque la quasi totalité des logements sont des logements anciens.
+</center>
+</div>
+<br>
+</br>
+
+<center>
+## Graphique de la répartition DPE dans la Meuse
+</center>
+
+
+```{r fig.width=6, fig.height=4,echo=FALSE, fig.align='center'}
+
+# Compter le nombre de chaque étiquette DPE
+compte_DPE <- df_final %>% count(Etiquette_DPE)
+
+
+# Création du graphique
+ggplot(compte_DPE, aes(x=Etiquette_DPE,y=n, fill=n))+     geom_bar(stat = "identity", colour="darkblue") +
+  geom_text(aes(label = n), vjust = -0.3, color =         "darkblue", size = 4) +
+  scale_fill_gradient(low = "#f0f8ff", high="#004d99") +
+  labs(x = "Étiquette DPE", 
+       y = "Nombre de DPE") +
+  theme_minimal()
+```
+
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+
+<center>**Ce graphique en barres** nous montre la répartition des DPE dans le département. On peut voir qu'une majorité de logements se situe dans la **catégorie D**.
+La Meuse reste donc dans la moyenne des DPE française pour la majorité des logements, même si l'on peut voir que beaucoup d'entre eux sont en classe E, F et G. Ce qui pourrait être intéressant, c'est de voir la répartition des DPE, afin de voir la proportion des DPE selon leur catégorie.</center>
+
+</div>
+<br>
+</br>
+
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+<center>
+## % de répartition DPE
+</center>
+</div>
+
+```{r fig.width=6, fig.height=4,echo=FALSE, fig.align='center'}
+# Calcul du total de DPE
+total_DPE <- sum(compte_DPE$n)
+
+# Regroupement des DPE dans les catégories et calcul des pourcentages
+tableprct <- data.frame(
+  Categorie_DPE = c("Très bon DPE (A,B)", "DPE correct (C,D,E)", "Mauvais DPE (F,G)"),
+  Pourcentage = c(
+    sum(compte_DPE$n[compte_DPE$Etiquette_DPE %in% c("A", "B")]) / total_DPE * 100,
+    sum(compte_DPE$n[compte_DPE$Etiquette_DPE %in% c("C", "D", "E")]) / total_DPE * 100,
+    sum(compte_DPE$n[compte_DPE$Etiquette_DPE %in% c("F", "G")]) / total_DPE * 100
+  )
+)
+
+# Création du diagramme circulaire
+ggplot(tableprct, aes(x = "", y = Pourcentage, fill = Categorie_DPE)) +
+  geom_bar(width = 1, stat = "identity") +
+  geom_bar(width = 1, stat = "identity", colour = "darkblue") +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = paste0(round(Pourcentage, 1), "%")),
+            position = position_stack(vjust = 0.5)) +
+  theme_void() +  # Pour un fond vide
+  scale_fill_manual(values = c("Très bon DPE (A,B)" = "#5CB85C", "DPE correct (C,D,E)" = "#FFD700", "Mauvais DPE (F,G)" = "#D9534F"))
+#couleurs trouvé grâce au site (https://www.datanovia.com/en/fr/blog/liste-geniale-de-657-noms-de-couleur-dans-r/)
+
+# Création des variables bonDPE et mauvaisDPE
+bonDPE <- sum(tableprct$Pourcentage[tableprct$Categorie_DPE %in% c("Très bon DPE (A,B)", "DPE correct (C,D,E)")])
+mauvaisDPE <- sum(tableprct$Pourcentage[tableprct$Categorie_DPE == "Mauvais DPE (F,G)"])
+
+```
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+```{r fig.width=6, fig.height=4,echo=FALSE, results='asis', fig.align='center'}
+cat("**Le graphique en camembert** ci-dessus représentant la répartition des DPE par catégorie dans le département de la **Meuse** nous offre une vision claire de la performance énergétique du parc immobilier.
+La situation énergétique du parc immobilier meusien est globalement satisfaisante, puisque","<span style='font-size:20px;'>","<span style='color:blue;'>", round(bonDPE, 1),"%</span>","</span>", " des logements **ont un bon DPE** et ","<span style='font-size:20px;'>","<span style='color:blue;'>", round(mauvaisDPE, 1),"%</span>","</span>", "  en **ont un mauvais**. Il y a donc quand même des efforts de rénovation à accomplir pour améliorer la performance énergétique des","<span style='font-size:20px;'>","<span style='color:blue;'>", round(mauvaisDPE, 1),"%</span>","</span>"," logements les moins performants.
+Il est néanmoins intéressant de voir si les logements les moins performants sont des logements neufs ou anciens.")
+```
+</div>
+
+<br>
+</br>
+<center>
+## Proportion des DPE par type de logement (ancien vs neuf)
+</center>
+```{r fig.width=6, fig.height=4,echo=FALSE, fig.align='center'}
+# Calculer la proportion de chaque DPE par type de logement
+df_type_dpe_prop <- df_final %>%
+  group_by(Type_de_logement, Etiquette_DPE) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(Type_de_logement) %>%
+  mutate(prop = n / sum(n))  # Calcul des proportions
+
+# Créer un diagramme en barres groupées avec les proportions
+ggplot(df_type_dpe_prop, aes(x = Etiquette_DPE, y = prop, fill = Type_de_logement)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Barres groupées
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.1)),   # Ajouter les valeurs des proportions
+            position = position_dodge(0.9), vjust = -0.3, size = 3) +
+  scale_y_continuous(labels = scales::percent) +     # Afficher les valeurs en pourcentage  
+  scale_fill_manual(values = c("ancien" = "#D9534F",  # Couleur bleue pour ancien
+                               "neuf" = "#004d99")) +  # Couleur verte pour neuf
+  labs(x = "Étiquette DPE",
+       y = "Proportion de logements",
+       fill = "Type de logement") +
+  theme_minimal()
+
+```
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+Grâce au **diagramme en barres groupées** ci-dessus, on peut affirmer que <p><strong><u>les logements neufs</u></strong> sont bien <em>clairement plus performants</em> en termes d'efficacité énergétique, avec une <strong>large majorité</strong> ayant des DPE de classe <strong>A</strong>. En revanche, <strong><u>les logements anciens</u></strong> sont majoritairement dans les classes <strong>D</strong> et <strong>E</strong>, avec une proportion non négligeable dans les classes <strong>F</strong> et <strong>G</strong>, soulignant la <em>nécessité d'améliorations énergétiques</em> pour ces logements.</p>
+
+</div>
+
+
+<br>
+</br>
+<center>
+## Proportion des bons et mauvais DPE par type de logement
+</center>
+
+
+```{r fig.width=6, fig.height=4,echo=FALSE, fig.align='center'}
+# Créer une nouvelle colonne pour catégoriser les DPE en "bon" et "mauvais"
+df_final <- df_final %>%
+  mutate(DPE_Categorie = ifelse(Etiquette_DPE %in% c("A", "B", "C"), "Bon DPE", "Mauvais DPE"))
+
+# Regrouper les données par type de logement et par catégorie de DPE (bon/mauvais)
+df_bon_mauvais <- df_final %>%
+  group_by(Type_de_logement, DPE_Categorie) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(Type_de_logement) %>%
+  mutate(prop = n / sum(n))  # Calculer les proportions
+
+# Créer un diagramme en barres empilées pour visualiser la proportion de bons et mauvais DPE
+ggplot(df_bon_mauvais, aes(x = Type_de_logement, y = prop, fill = DPE_Categorie)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(prop, accuracy = 0.1)), 
+            position = position_stack(vjust = 0.5), size = 4, color = "black") +  # Ajouter les valeurs au centre des barres
+  scale_y_continuous(labels = scales::percent) +  # Afficher les proportions en pourcentage
+  scale_fill_manual(values = c("Bon DPE" = "#B5EAD7", "Mauvais DPE" = "#FFB7B2")) +  # Couleurs personnalisées
+  labs(x = "Type de logement",
+       y = "Proportion de logements",
+       fill = "Catégorie de DPE") +
+  theme_minimal()
+```
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+**Le diagramme en barres empilées** ci-dessus permet également de visualiser la proportion de **"bons" et "mauvais" DPE** par type de logement. On voit bien que **100% des logements neufs** ont un bon DPE (de **A à C**) tandis que seulement **23% des logements anciens** le sont.  
+Il permet donc de **renforcer l'idée** que les **logements neufs sont nettement plus performants énergétiquement** que les logements anciens, et montre un **besoin important de rénovation énergétique** pour les logements anciens.
+
+</div>
+
+<br>
+</br>
+<center>
+  <h1 style="color: #004d99;">Conclusion</h1>
+</center>
+<div style="max-width: 800px; margin: 0 auto; text-align: center;">
+
+**L'analyse des diagnostics de performance énergétique (DPE)** dans le département de la Meuse révèle des tendances significatives entre les **logements anciens** et **neufs**. Les **logements neufs** se distinguent par une **efficacité énergétique supérieure**, avec une majorité classée dans les catégories **A et B**, ce qui reflète les efforts récents en matière de **construction écologique** et d'**économie d'énergie**. En revanche, les **logements anciens** sont majoritairement classés dans les catégories intermédiaires **D et E**, ce qui souligne l'importance d'**entreprendre des rénovations énergétiques** pour améliorer leur performance.<br><br>
+
+L'étude a permis d'identifier une **corrélation** entre l'**âge des bâtiments** et leur **performance énergétique**, ce qui constitue une base solide pour des **politiques publiques** ciblées visant à réduire l'**empreinte carbone** du parc immobilier existant.<br><br>
+
+Les **visualisations présentées**, comme le **graphique de répartition des DPE** par type de logement et le **diagramme circulaire** sur les catégories de logements, ont illustré clairement ces différences et ont mis en évidence les points clés de l'analyse.<br><br>
+
+Cette petite étude montre donc l'importance de **cibler les logements anciens** pour atteindre les **objectifs de réduction de la consommation énergétique** et des **émissions de CO₂**, tout en valorisant les efforts déjà réalisés dans la construction de **nouveaux logements plus performants**.
+
+
+</center>
+</div>
