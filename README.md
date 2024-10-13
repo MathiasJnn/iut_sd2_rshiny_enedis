@@ -1,16 +1,22 @@
 # Projet R - Département de la Meuse (55)
+## Auteurs : Mathias Janin & Azad Lucas
 
-Testitestou dans le readme avec blocnote
+### Introduction
+Dans le cadre du projet R réalisé à l'IUT par les SD2 (années 2024-25), nous avons choisi de travailler sur le département de la Meuse (55). Pour rappel, le projet consiste à développer une application RShiny permettant de visualiser des données énergétiques (logements neufs et anciens) pour un département donné.  L'objectif est d'offrir à l'utilisateur des outils pour explorer les données via des graphiques, tableaux et cartographies interactives. En complément de cette application, un rapport RMarkdown a été produit pour détailler les analyses statistiques réalisées sur ces données. Ce projet s'inscrit dans le cadre d'une étude visant à explorer l'impact du Diagnostic de Performance Energétique (DPE) sur les consommations énergétiques des logements grâce à des données provenant de plusieurs sources, notamment la Base Adresse Nationale (BAN) et deux API fournies par l'ADEME (logements neufs et existants).
 
-Bonjour
+### Structure des fichiers du repository
+Voici la liste des fichiers disponibles dans ce repository et leur utilité dans le projet :
 
-il faut mettre en tout: le code pour créer la df_final
-                        le r markdown
-                        le rshiny
-                        les deux docu
-                        la bd source (pour eviter le setwd et read.csv) et donc que ça la chope sur github directement
+**adresses-55.csv** : Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données.
 
-Projet R - Département de la Meuse (55)
-Auteurs : Lucas Azad & [Votre Nom]
-Introduction
-Dans le cadre du projet réalisé pour l'IUT SD2 de 2024, nous avons choisi de travailler sur les données du département de la Meuse (55). Ce projet s'inscrit dans le cadre d'une étude visant à explorer l'impact du Diagnostic de Performance Energétique (DPE) sur les consommations énergétiques des logements. Notre objectif était de développer une application RShiny permettant de visualiser ces données et de générer un rapport statistique basé sur des données provenant de plusieurs sources, notamment la Base Adresse Nationale (BAN) et deux API fournies par l'ADEME (logements neufs et existants).
+**Base_de_données.R** : Script R permettant de générer la base de données finale. Cette base regroupe les données de la BAN ainsi que celles des API "logements neufs" et "logements existants" de l'ADEME.
+
+**Rapport_final_Script.Rmd** : Ce fichier est un document RMarkdown qui contient le code source permettant de générer le rapport final en format HTML. Il regroupe les analyses et visualisations réalisées à partir des données collectées.
+
+**Rapport_final_HTML.html** : Rapport final généré en format HTML. Il présente les analyses statistiques et graphiques réalisées à partir des données collectées.
+
+**README.md** : Ce fichier que vous lisez actuellement. Il présente une vue d'ensemble du projet, sa structure, ainsi que les fichiers présents dans le repository.
+
+
+il faut mettre en tout: le rshiny
+                        les deux docus
