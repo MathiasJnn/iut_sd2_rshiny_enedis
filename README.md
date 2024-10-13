@@ -14,6 +14,7 @@ Dans le cadre du projet R réalisé à l'IUT par les SD2 (années 2024-25), nous
 ## Notre repository
 <br>
 </br>
+
 ## Structure des fichiers du repository
 Voici la liste des fichiers disponibles dans ce repository et leur utilité dans le projet :
 <br>
