@@ -15,6 +15,10 @@ Dans le cadre du projet R réalisé à l'IUT par les SD2 (années 2024-25), nous
 Voici la liste des fichiers disponibles dans ce repository et leur utilité dans le projet :
 <br>
 </br>
+### **`Application_Meuse.R`**: 
+Ce fichier est le script R qui permet d'éxécuter l'application RShiny.
+<br>
+</br>
 ### **`adresses-55.csv`**: 
 Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données. Il sert également de lien pour éxécuter le code sans avoir à importer localement les données sur le poste de l'utilisateur.
 <br>
