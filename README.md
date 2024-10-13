@@ -7,15 +7,20 @@ Dans le cadre du projet R réalisé à l'IUT par les SD2 (années 2024-25), nous
 ### Structure des fichiers du repository
 Voici la liste des fichiers disponibles dans ce repository et leur utilité dans le projet :
 
-<big>**adresses-55.csv**</big> : Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données.
+####**adresses-55.csv**: 
+Ce fichier contient les données issues de la Base Adresse Nationale (BAN) pour le département de la Meuse (55). Il nous a permis d'importer les informations géographiques des logements dans notre base de données.
 
-**Base_de_données.R** : Script R permettant de générer la base de données finale. Cette base regroupe les données de la BAN ainsi que celles des API "logements neufs" et "logements existants" de l'ADEME.
+####**Base_de_données.R** : 
+Script R permettant de générer la base de données finale. Cette base regroupe les données de la BAN ainsi que celles des API "logements neufs" et "logements existants" de l'ADEME.
 
-**Rapport_final_Script.Rmd** : Ce fichier est un document RMarkdown qui contient le code source permettant de générer le rapport final en format HTML. Il regroupe les analyses et visualisations réalisées à partir des données collectées.
+####**Rapport_final_Script.Rmd** : 
+Ce fichier est un document RMarkdown qui contient le code source permettant de générer le rapport final en format HTML. Il regroupe les analyses et visualisations réalisées à partir des données collectées.
 
-**Rapport_final_HTML.html** : Rapport final généré en format HTML. Il présente les analyses statistiques et graphiques réalisées à partir des données collectées.
+####**Rapport_final_HTML.html** : 
+Rapport final généré en format HTML. Il présente les analyses statistiques et graphiques réalisées à partir des données collectées.
 
-**README.md** : Ce fichier que vous lisez actuellement. Il présente une vue d'ensemble du projet, sa structure, ainsi que les fichiers présents dans le repository.
+####**README.md** : 
+Ce fichier que vous lisez actuellement. Il présente une vue d'ensemble du projet, sa structure, ainsi que les fichiers présents dans le repository.
 
 
 il faut mettre en tout: le rshiny
