@@ -16,7 +16,7 @@ Voici la liste des fichiers disponibles dans ce repository et leur utilité dans
 <br>
 </br>
 ### **`Application_Meuse.R`**: 
-Ce fichier est le script R qui permet d'éxécuter l'application RShiny.
+Ce fichier est le script R qui permet d'éxécuter l'application RShiny. Ayant eu des soucis quant au déploiement de l'application, il faut copier le code afin de l'éxécuter sur R.
 <br>
 </br>
 ### **`adresses-55.csv`**: 
